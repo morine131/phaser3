@@ -1,14 +1,12 @@
 import "phaser";
+import { Player } from "./player";
 
 export default class Demo extends Phaser.Scene {
   private platforms: Phaser.Physics.Arcade.StaticGroup;
 
-  private player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private playerVelocityX: number = 0;
+  private player: Player;
 
   private thresholdOfScaleX: number = 1200;
-
-  private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
   /** デバッグ表示領域 */
   private __debugDisplayArea?: Phaser.GameObjects.Container;
@@ -86,36 +84,14 @@ export default class Demo extends Phaser.Scene {
     this.platforms.create(750, 220, "ground");
 
     // プレイヤーキャラクターの追加
-    this.player = this.physics.add.sprite(100, 450, "dude");
+    this.player = new Player(
+      this,
+      this.cameras.main.centerX,
+      this.cameras.main.height * 0.8
+    );
 
-    // this.player.setBounce(0.2);
-    this.player.setCollideWorldBounds(true);
-
-    this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers("dude", { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "turn",
-      frames: [{ key: "dude", frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers("dude", { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    //衝突判定を設定する
+    // //衝突判定を設定する
     this.physics.add.collider(this.player, this.platforms);
-
-    // カーソル入力を判定できるようにする
-    this.cursors = this.input.keyboard.createCursorKeys();
 
     //カメラがプレイヤーを追跡するようにする
     this.cameras.main.startFollow(this.player);
@@ -136,36 +112,14 @@ export default class Demo extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     this.debugModeOn();
-    if (this.cursors.right.isDown) {
-      this.playerVelocityX++;
-
-      this.player.anims.play("right", true);
-    } else if (this.cursors.left.isDown) {
-      this.playerVelocityX--;
-
-      this.player.anims.play("left", true);
-    } else {
-      if (this.playerVelocityX > 0) {
-        this.playerVelocityX--;
-      } else if (this.playerVelocityX < 0) {
-        this.playerVelocityX++;
-      }
-
-      this.player.anims.play("turn");
-    }
-
-    this.player.setVelocityX(this.playerVelocityX);
-
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
-    }
 
     //ステージを伸ばしたい
-    // プレイヤーのx位置判定？ → 結果はあってる
+    // プレイヤーのx位置判定？ → 結果はあってる //背景と画面
     if (this.player.x > this.thresholdOfScaleX) {
       this.platforms
         .create(this.thresholdOfScaleX, 568, "ground")
         .setScale(10, 1)
+
         .refreshBody();
       this.thresholdOfScaleX += 1200;
     }
