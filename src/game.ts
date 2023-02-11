@@ -1,4 +1,5 @@
 import "phaser";
+import Debug from "./debug";
 import { Player } from "./player";
 
 export default class Demo extends Phaser.Scene {
@@ -8,56 +9,58 @@ export default class Demo extends Phaser.Scene {
 
   private thresholdOfScaleX: number = 1200;
 
-  /** デバッグ表示領域 */
-  private __debugDisplayArea?: Phaser.GameObjects.Container;
-  /** デバッグ表示内容 */
-  private __debugText: Phaser.GameObjects.Text[] =
-    Array<Phaser.GameObjects.Text>(10);
-  /** デバッグ内の文字スタイル */
-  private __debugStyle: object = {
-    fontSize: "14px",
-    color: "white",
-    wordWrap: {
-      width: 720,
-      useAdvancedWrap: true,
-    },
-  };
-  /** デバッグ表示インターバル */
-  private __debugInterval: number = 100;
+  private debug: Debug;
 
-  /**
-   * デバッグモードを開始（create()から呼び出し）
-   */
-  private startDebugMode(): void {
-    this.__debugDisplayArea = this.add.container(550, 350).setScrollFactor(0);
+  //   /** デバッグ表示領域 */
+  //   private __debugDisplayArea?: Phaser.GameObjects.Container;
+  //   /** デバッグ表示内容 */
+  //   private __debugText: Phaser.GameObjects.Text[] =
+  //     Array<Phaser.GameObjects.Text>(10);
+  //   /** デバッグ内の文字スタイル */
+  //   private __debugStyle: object = {
+  //     fontSize: "14px",
+  //     color: "white",
+  //     wordWrap: {
+  //       width: 720,
+  //       useAdvancedWrap: true,
+  //     },
+  //   };
+  //   /** デバッグ表示インターバル */
+  //   private __debugInterval: number = 100;
 
-    for (var i = 0; i < 10; i++) {
-      this.__debugText[i] = this.add.text(
-        0,
-        -300 + 20 * i,
-        "",
-        this.__debugStyle
-      );
-    }
-    this.__debugDisplayArea.add([...this.__debugText]);
-    this.__debugDisplayArea.setVisible(true);
-  }
+  //   /**
+  //    * デバッグモードを開始（create()から呼び出し）
+  //    */
+  //   private startDebugMode(): void {
+  //     this.__debugDisplayArea = this.add.container(550, 350).setScrollFactor(0);
 
-  /**
-   * デバッグモード（update()から呼び出し）
-   */
-  private debugModeOn(): void {
-    if (this.__debugInterval === 0) {
-      this.__debugText[0].setText(`player.x = ${this.player.x}`);
-      this.__debugText[1].setText(
-        `thresholdOfScaleX = ${this.thresholdOfScaleX}`
-      );
-      this.__debugDisplayArea.setVisible(true);
-      this.__debugInterval = 50;
-    } else {
-      this.__debugInterval--;
-    }
-  }
+  //     for (var i = 0; i < 10; i++) {
+  //       this.__debugText[i] = this.add.text(
+  //         0,
+  //         -300 + 20 * i,
+  //         "",
+  //         this.__debugStyle
+  //       );
+  //     }
+  //     this.__debugDisplayArea.add([...this.__debugText]);
+  //     this.__debugDisplayArea.setVisible(true);
+  //   }
+
+  //   /**
+  //    * デバッグモード（update()から呼び出し）
+  //    */
+  //   private debugModeOn(): void {
+  //     if (this.__debugInterval === 0) {
+  //       this.__debugText[0].setText(`player.x = ${this.player.x}`);
+  //       this.__debugText[1].setText(
+  //         `thresholdOfScaleX = ${this.thresholdOfScaleX}`
+  //       );
+  //       this.__debugDisplayArea.setVisible(true);
+  //       this.__debugInterval = 50;
+  //     } else {
+  //       this.__debugInterval--;
+  //     }
+  //   }
 
   constructor() {
     super("demo");
@@ -107,11 +110,13 @@ export default class Demo extends Phaser.Scene {
     this.cameras.main.setBounds(stage.x, stage.y, stage.width, stage.height);
     this.physics.world.setBounds(stage.x, stage.y, stage.width, stage.height);
 
-    this.startDebugMode();
+    this.debug = new Debug(this, 550, 350);
+
+    this.debug.startDebugMode();
   }
 
   update(time: number, delta: number): void {
-    this.debugModeOn();
+    this.debug.debugModeOn(this.player, this.thresholdOfScaleX);
 
     //ステージを伸ばしたい
     // プレイヤーのx位置判定？ → 結果はあってる //背景と画面
