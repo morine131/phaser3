@@ -6,6 +6,8 @@ const ANIM_STAT = {
   LEFT: "left",
 } as const;
 
+const defaultJumpPower = 20;
+
 export class Player extends Phaser.GameObjects.Sprite {
   private context: Scene;
 
@@ -13,6 +15,10 @@ export class Player extends Phaser.GameObjects.Sprite {
   private keyS: Phaser.Input.Keyboard.Key;
   private keyD: Phaser.Input.Keyboard.Key;
   private keyW: Phaser.Input.Keyboard.Key;
+
+  public jumpPower = 0;
+
+  body: Phaser.Physics.Arcade.Body;
 
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, "hoge");
@@ -55,6 +61,8 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     this.context.add.existing(this);
     this.context.physics.add.existing(this);
+
+    this.body.setCollideWorldBounds(true);
   }
 
   protected preUpdate(time: number, delta: number) {
@@ -67,8 +75,12 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.anims.play(ANIM_STAT.RIGHT, true);
       this.x += 10;
     }
-    if (this.keyW.isDown) {
-      this.y -= 10;
+
+    if (this.jumpPower > 0) {
+      this.jumpPower -= 0.6;
+      this.y -= this.jumpPower;
+    } else if (this.keyW.isDown && this.body.touching.down) {
+      this.jumpPower = defaultJumpPower;
     }
   }
 }
