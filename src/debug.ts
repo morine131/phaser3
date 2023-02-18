@@ -49,12 +49,12 @@ export default class Debug extends Phaser.GameObjects.Container {
   /**
    * デバッグモード（update()から呼び出し）
    */
-  public debugModeOn(player: Player, thresholdOfScaleX: number): void {
+  public debugModeOn(player: Player, stageX: number): void {
     if (this.__debugInterval === 0) {
       this.__debugText[0].setText(`player.x = ${player.x}`);
-      this.__debugText[1].setText(`thresholdOfScaleX = ${thresholdOfScaleX}`);
+      this.__debugText[1].setText(`stageX = ${stageX}`);
       this.setVisible(true);
-      this.__debugInterval = 50;
+      this.__debugInterval = 10;
     } else {
       this.__debugInterval--;
     }

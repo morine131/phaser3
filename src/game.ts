@@ -7,8 +7,6 @@ export default class Demo extends Phaser.Scene {
 
   private player: Player;
 
-  private thresholdOfScaleX: number = 1200;
-
   private debug: Debug;
 
   constructor() {
@@ -34,7 +32,7 @@ export default class Demo extends Phaser.Scene {
     // 静的グループで地面を作る
     this.platforms = this.physics.add.staticGroup();
 
-    this.platforms.create(400, 568, "ground").setScale(4, 1).refreshBody();
+    this.platforms.create(400, 568, "ground").setScale(8, 1).refreshBody();
 
     this.platforms.create(600, 400, "ground");
     this.platforms.create(50, 250, "ground");
@@ -60,18 +58,26 @@ export default class Demo extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    this.debug.debugModeOn(this.player, this.thresholdOfScaleX);
+    this.debug.debugModeOn(this.player, stage.x);
 
     // 地面と空を伸ばす
-    if (this.player.x > this.thresholdOfScaleX - 400) {
+    if (stage.x > stage.thresholdX - 1600) {
       this.platforms
-        .create(this.thresholdOfScaleX - 400, 568, "ground")
+        .create(stage.thresholdX, 568, "ground")
         .setScale(8, 1)
         .refreshBody();
-      this.add.image(stage.x - 400, 300, "sky").setScale(8, 1);
+      this.add.image(stage.thresholdX, 300, "sky").setScale(4, 1).setDepth(-1);
 
-      this.thresholdOfScaleX += 1200;
+      stage.thresholdX += 2400;
     }
+    //   this.platforms
+    //     .create(this.thresholdOfScaleX - 400, 568, "ground")
+    //     .setScale(8, 1)
+    //     .refreshBody();
+    //   this.add.image(stage.x - 400, 300, "sky").setScale(8, 1);
+
+    //   this.thresholdOfScaleX += 1200;
+    // }
 
     //強制スクロール
     this.cameras.main.scrollX++;
@@ -101,6 +107,7 @@ const stage = {
   y: 0,
   width: config.width,
   height: config.height,
+  thresholdX: 2400,
 };
 
 const game = new Phaser.Game(config);
